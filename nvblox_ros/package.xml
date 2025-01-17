@@ -25,13 +25,13 @@
   <description>nvblox ROS1 interface</description>
 
   <maintainer email="helenoleynikvoa@gmail.com">Helen Oleynikova</maintainer>
-  <maintainer email="tutuna@ethz.ch">Turcan Tuna</maintainer> 
+  <maintainer email="tutuna@ethz.ch">Turcan Tuna</maintainer>
   <license>Apache-2.0</license>
 
   <author>Turcan Tuna</author>
   <author>Helen Oleynikova</author>
   <author>Alexander Millane</author>
-  
+
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>geometry_msgs</depend>
@@ -40,6 +40,7 @@
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>visualization_msgs</depend>
+  <depend>tf_conversions</depend>
   <depend>std_srvs</depend>
   <depend>tf2_ros</depend>
   <depend>nvblox</depend>
