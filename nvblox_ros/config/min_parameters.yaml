@@ -11,10 +11,10 @@ use_static_occupancy_layer: false
 voxel_size: 0.05
 
 # The name of the TF frame to be used as the global frame.
-global_frame: "left"
+global_frame: "map"
 
 # Only used if `use_topic_transforms` is set to true. Pose and transform messages will be interpreted as being in this pose frame, and the remaining transform to the sensor frame will be looked up on the TF tree.
-pose_frame: "left"
+pose_frame: "map"
 
 #  If the depth data is originating from Realsense Depth Cameras.
 is_realsense_data: false

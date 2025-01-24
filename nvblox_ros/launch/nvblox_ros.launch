@@ -2,13 +2,12 @@
 
 <launch>
   <arg name="param_file" default="$(find nvblox_ros)/config/full_parameters.yaml"/>
-  <arg name="rviz" default="false" />
-
-  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find nvblox_ros)/rviz/rviz.rviz" if="$(arg rviz)"/>
 
   <node pkg="nvblox_ros" type="nvblox_node" name="nvblox_node" respawn="false" output="screen" clear_params="true">
     <rosparam file="$(arg param_file)"/>
 
+
+    <!-- Anything here ovewrites the parameters in the config file. -->
     <param name="global_frame" value="map" />
     <param name="lidar_width" value="440" />
     <param name="use_depth" value="true" />

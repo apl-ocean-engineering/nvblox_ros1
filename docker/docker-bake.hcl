@@ -1,6 +1,6 @@
 # docker buildx bake
 group "default" {
-  targets = ["core"]
+  targets = ["core", "base"]
 }
 
 target "core" {
@@ -9,7 +9,17 @@ target "core" {
   dockerfile = "Dockerfile"
   platforms  = ["linux/amd64"]
   tags       = [
-    "nvblox:latest",
+    "nvblox:core",
   ]
 }
 
+target "base" {
+  target = "base"
+  context    = "."
+  dockerfile = "Dockerfile"
+  platforms  = ["linux/amd64"]
+  tags       = [
+    "nvblox:base",
+  ]
+  output = ["type=docker"]
+}

@@ -1,13 +1,10 @@
 services:
   nvblox:
-    image: nvblox:latest
+    image: nvblox:base
     container_name: nvblox
     environment:
       - DISPLAY=${DISPLAY}
-      - FRANKA_IP=${FRANKA_IP}
-      - XAUTHORITY=${XAUTH}
     volumes:
-      - ../../../src:/root/nvblox_ws/src
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     devices:
       - /dev/dri:/dev/dri
