@@ -52,10 +52,10 @@ This package is designed and tested to be compatible with ROS 1 Noetic running o
 | x86_64   | NVIDIA GPU   | [Ubuntu 20.04+](https://releases.ubuntu.com/20.04/) <br> [CUDA 11.8+](https://developer.nvidia.com/cuda-downloads) |                                                                                                                                                                                         |
 
 # Installation
-There's 2 options: docker
+There's 2 options: docker and local installation
 ## Docker
 
-To simplify development, we strongly recommend using the docker images in [the docker subfolder](./docker/run_docker.sh)
+To simplify development, we strongly recommend using the docker installation in [the docker subfolder](./docker/)
 
 First check out this repo into `~/nvblox_ws/src/` and create `~/data` to store data:
 ```
@@ -70,28 +70,18 @@ git submodule update --init --recursive
 Then build the docker using:
 ```
 cd ~/nvblox_ws/src/nvblox_ros1/docker
-./run_docker.sh -b
+docker buildx bake
 ```
 
-Within the docker, make sure to set up the workspace with:
+To run the docker:
 ```
-cd ~/nvblox_ws/
-catkin init
-catkin config --extend /opt/ros/noetic
-catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
-catkin build
-echo "source ~/nvblox_ws/devel/setup.bash" >> ~/.bashrc
+cd ~/nvblox_ws/src/nvblox_ros1/docker
+docker compose up -d # -d flag starts container in the background
 ```
 
-For future iterations you can run it with just:
+To attach to the running docker:
 ```
-./run_docker.sh
-```
-(Check out `./run_docker.sh -h` for more settings, such as the docker name).
-
-To launch additional terminal sessions into the docker, use:
-```
-docker exec -it nvblox bash
+docker exec -it nvblox /bin/bash
 ```
 
 ## Native Install

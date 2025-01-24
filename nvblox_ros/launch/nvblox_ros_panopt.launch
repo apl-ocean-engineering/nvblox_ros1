@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <launch>
-  <arg name="use_sim_time"  default="true" />
+  <arg name="use_sim_time"  default="false" />
   <arg name="param_file" default="$(find nvblox_ros)/config/min_parameters.yaml"/>
   <arg name="rviz" default="false" />
 
@@ -9,15 +9,14 @@
 
   <node pkg="nvblox_ros" type="nvblox_node" name="nvblox_node" respawn="false" output="screen" >
     <rosparam file="$(arg param_file)"/>
-    <remap from="depth/image" to="/data/depth_image" />
-    <remap from="depth/camera_info" to="/data/depth_image/camera_info" />
+    <remap from="depth/image" to="/raft_stereo/depth_image" />
+    <remap from="depth/camera_info" to="/raft_stereo/camera_info" />
 
-    <remap from="color/image" to="/data/color_image" />
-    <remap from="color/camera_info" to="/data/color_image/camera_info" />
 
     <!-- Anything here ovewrites the parameters in the config file. -->
-    <param name="global_frame" value="odom" />
+    <param name="global_frame" value="left" />
     <param name="use_sim_time" value="$(arg use_sim_time)" />
+    <param name="use_tf_transforms" value="false" />
     <param name="use_lidar" value="false" />
     <param name="voxel_size" value="0.05" />
     <param name="esdf_slice_height" value="-0.75" />

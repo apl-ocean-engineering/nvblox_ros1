@@ -70,10 +70,10 @@ RUN mkdir -p $WORKDIR/src
 # Clone the Git repository into the src directory
 WORKDIR $WORKDIR/src
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:" && \
-    git clone https://github.com/ethz-asl/nvblox_ros1.git && \
+    git clone https://github.com/micat001/nvblox_ros1.git --branch feature/micatka_docker_updates && \
     cd nvblox_ros1 && \
     git submodule update --init --recursive --remote && \
-    vcs import --recursive --input docker/scripts/nvblox_ros_deps.repos
+    vcs import --recursive --input nvblox_ros_deps.repos
 
 # Use rosdep to install package dependencies in the workspace
 WORKDIR $WORKDIR
@@ -81,8 +81,14 @@ RUN apt-get update && rosdep install --from-paths src --ignore-src -r -y --rosdi
 
 # Build the workspace using catkin
 WORKDIR $WORKDIR
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build"
+RUN catkin init && \
+    catkin config --extend /opt/ros/noetic && \
+    catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
+# && \
+# /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build"
 
 # Source the workspace on entry
-RUN echo "source $WORKDIR/devel/setup.bash" >> ~/.bashrc
+# RUN echo "source $WORKDIR/devel/setup.bash" >> ~/.bashrc
+RUN echo "source ~/.bashrc" >> ~/.bash_profile
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 SHELL ["/bin/bash", "-c"]
