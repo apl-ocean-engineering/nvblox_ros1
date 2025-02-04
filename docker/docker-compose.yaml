@@ -5,7 +5,8 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ../../../src:/root/nvblox_ws/src
+      - /tmp/.X11-unix:/tm  p/.X11-unix:rw
     devices:
       - /dev/dri:/dev/dri
     deploy:

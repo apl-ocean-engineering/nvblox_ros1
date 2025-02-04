@@ -9,7 +9,7 @@ target "core" {
   dockerfile = "Dockerfile"
   platforms  = ["linux/amd64"]
   tags       = [
-    "nvblox:core",
+    "registry.gitlab.com/apl-ocean-engineering/raven/manipulation/mapping/nvblox:core",
   ]
 }
 
@@ -19,7 +19,7 @@ target "base" {
   dockerfile = "Dockerfile"
   platforms  = ["linux/amd64"]
   tags       = [
-    "nvblox:base",
+    "registry.gitlab.com/apl-ocean-engineering/raven/manipulation/mapping/nvblox:base",
   ]
   output = ["type=docker"]
 }

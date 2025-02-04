@@ -75,6 +75,7 @@ docker buildx bake
 
 To run the docker:
 ```
+xhost +local:docker # Allow GUI access
 cd ~/nvblox_ws/src/nvblox_ros1/docker
 docker compose up -d # -d flag starts container in the background
 ```
