@@ -1,6 +1,6 @@
 services:
   nvblox:
-    image: nvblox:base
+    image: registry.gitlab.com/apl-ocean-engineering/raven/manipulation/mapping/nvblox:base
     container_name: nvblox
     environment:
       - DISPLAY=${DISPLAY}
