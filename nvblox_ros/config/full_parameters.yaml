@@ -10,10 +10,10 @@ use_static_occupancy_layer: false
 voxel_size: 0.05
 
 # The name of the TF frame to be used as the global frame.
-global_frame: "map"
+global_frame: "bravo_base_link"
 
 # Only used if `use_topic_transforms` is set to true. Pose and transform messages will be interpreted as being in this pose frame, and the remaining transform to the sensor frame will be looked up on the TF tree.
-pose_frame: "base_link"
+pose_frame: "bravo_base_link"
 
 #  If the depth data is originating from Realsense Depth Cameras.
 is_realsense_data: false
@@ -60,7 +60,7 @@ lidar_height: 16
 lidar_vertical_fov_deg: 30.0
 
 # Frame to which the map slice bounds visualization is centered on the xy-plane.
-slice_visualization_attachment_frame_id: "base_link"
+slice_visualization_attachment_frame_id: "bravo_base_link"
 
 # Side length of the map slice bounds visualization plane.
 slice_visualization_side_length: 10.0
@@ -93,7 +93,7 @@ maximum_sensor_message_queue_length: 30
 map_clearing_radius_m: -1.0
 
 # The name of the TF frame around which we clear the map.
-map_clearing_frame_id: "base_link"
+map_clearing_frame_id: "bravo_base_link"
 
 # The rate (in Hz) at wich we clear the map outside of the `map_clearing_radius_m`.
 clear_outside_radius_rate_hz: 1.0

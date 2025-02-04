@@ -1,0 +1,21 @@
+services:
+  nvblox:
+    image: registry.gitlab.com/apl-ocean-engineering/raven/manipulation/mapping/nvblox:base
+    container_name: nvblox
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - ../../../src:/root/nvblox_ws/src
+      - /tmp/.X11-unix:/tm  p/.X11-unix:rw
+    devices:
+      - /dev/dri:/dev/dri
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    network_mode: host
+    privileged: true
+    command: tail -f /dev/null

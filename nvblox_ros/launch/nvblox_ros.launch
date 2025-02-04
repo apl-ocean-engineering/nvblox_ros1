@@ -9,12 +9,12 @@
 
   <node pkg="nvblox_ros" type="nvblox_node" name="nvblox_node" respawn="false" output="screen" >
     <rosparam file="$(arg param_file)"/>
-    <remap from="depth/image" to="/filter_operations_node/background_depth" />
+    <remap from="depth/image" to="/filter_operations_node/object_depth" />
     <remap from="depth/camera_info" to="/filter_operations_node/camera_info" />
 
     <!-- Anything here ovewrites the parameters in the config file. -->
     <param name="use_sim_time" value="$(arg use_sim_time)" />
-    <param name="voxel_size" value="0.05" />
+    <param name="voxel_size" value="0.01" />
     <param name="esdf_slice_height" value="-0.75" />
     <param name="esdf_2d" value="true" />
     <param name="esdf_2d_min_height" value="-0.85" />
