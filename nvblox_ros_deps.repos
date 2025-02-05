@@ -4,3 +4,15 @@ repositories:
     local-name: catkin_simple
     url: git@github.com:catkin/catkin_simple.git
     version: 0e62848b12da76c8cc58a1add42b4f894d1ac21e
+  nvblox_msgs:
+      type: git
+      url: https://github.com/apl-ocean-engineering/nvblox_msgs.git
+      version: main
+  nvblox_rviz_plugin:
+    type: git
+    url: https://github.com/apl-ocean-engineering/nvblox_rviz_plugin.git
+    version: main
+  raven_manip_msgs:
+    type: git
+    url: https://gitlab.com/apl-ocean-engineering/raven/manipulation/raven_manip_msgs.git
+    version: main
