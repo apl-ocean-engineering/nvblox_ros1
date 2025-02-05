@@ -74,7 +74,7 @@ RUN mkdir -p $WORKDIR/src
 # Clone the Git repository into the src directory
 WORKDIR $WORKDIR/src
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:" && \
-    git clone https://github.com/micat001/nvblox_ros1.git --branch feature/micatka_docker_updates && \
+    git clone https://github.com/apl-ocean-engineering/nvblox_ros1.git && \
     cd nvblox_ros1 && \
     git submodule update --init --recursive && \
     vcs import --recursive --input nvblox_ros_deps.repos
