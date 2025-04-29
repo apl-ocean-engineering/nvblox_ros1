@@ -12,7 +12,4 @@ repositories:
     type: git
     url: https://github.com/apl-ocean-engineering/nvblox_rviz_plugin.git
     version: main
-  raven_manip_msgs:
-    type: git
-    url: https://gitlab.com/apl-ocean-engineering/raven/manipulation/raven_manip_msgs.git
-    version: main
+
