@@ -40,6 +40,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/String.h>
+#include <std_srvs/Trigger.h>
 #include <visualization_msgs/Marker.h>
 
 #include <nvblox/nvblox.h>
@@ -81,6 +82,12 @@ class NvbloxNode {
                nvblox_msgs::FilePath::Response& response);
   bool loadMap(nvblox_msgs::FilePath::Request& request,
                nvblox_msgs::FilePath::Response& response);
+  bool startMapping(std_srvs::Trigger::Request& request,
+                    std_srvs::Trigger::Response& response);
+  bool stopMapping(std_srvs::Trigger::Request& request,
+                   std_srvs::Trigger::Response& response);
+  bool clearMap(std_srvs::Trigger::Request& request,
+                std_srvs::Trigger::Response& response);
 
   // Does whatever processing there is to be done, depending on what
   // transforms are available.
@@ -205,6 +212,9 @@ class NvbloxNode {
   ros::ServiceServer save_ply_service_;
   ros::ServiceServer save_map_service_;
   ros::ServiceServer load_map_service_;
+  ros::ServiceServer start_mapping_service_;
+  ros::ServiceServer stop_mapping_service_;
+  ros::ServiceServer clear_map_service_;
 
   // Timers.
   ros::Timer depth_processing_timer_;
@@ -223,6 +233,7 @@ class NvbloxNode {
   ProjectiveLayerType static_projective_layer_type_ =
       ProjectiveLayerType::kTsdf;
   bool is_realsense_data_ = false;
+  bool mapping_started_ = false;
 
   // Toggle parameters
   bool use_depth_ = true;

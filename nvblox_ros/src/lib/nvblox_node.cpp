@@ -229,6 +229,12 @@ void NvbloxNode::advertiseServices() {
       nh_private_.advertiseService("save_map", &NvbloxNode::saveMap, this);
   load_map_service_ =
       nh_private_.advertiseService("load_map", &NvbloxNode::loadMap, this);
+  start_mapping_service_ = nh_private_.advertiseService(
+      "start_mapping", &NvbloxNode::startMapping, this);
+  stop_mapping_service_ = nh_private_.advertiseService(
+      "stop_mapping", &NvbloxNode::stopMapping, this);
+  clear_map_service_ =
+      nh_private_.advertiseService("clear_map", &NvbloxNode::clearMap, this);
 }
 
 void NvbloxNode::setupTimers() {
@@ -539,6 +545,12 @@ bool NvbloxNode::isUpdateTooFrequent(const ros::Time& current_stamp,
 bool NvbloxNode::processDepthImage(
     const std::pair<sensor_msgs::ImageConstPtr,
                     sensor_msgs::CameraInfo::ConstPtr>& depth_camera_pair) {
+  // Check if mapping is enabled
+  if (!mapping_started_) {
+    ROS_DEBUG_THROTTLE(5.0,
+                       "Mapping is stopped. Skipping depth image processing.");
+    return false;
+  }
   ROS_DEBUG("Depth Image processing has started");
   timing::Timer ros_depth_timer("ros/depth");
   timing::Timer transform_timer("ros/depth/transform");
@@ -590,6 +602,12 @@ bool NvbloxNode::processDepthImage(
 bool NvbloxNode::processColorImage(
     const std::pair<sensor_msgs::ImageConstPtr,
                     sensor_msgs::CameraInfo::ConstPtr>& color_camera_pair) {
+  // Check if mapping is enabled
+  if (!mapping_started_) {
+    ROS_DEBUG_THROTTLE(5.0,
+                       "Mapping is stopped. Skipping depth image processing.");
+    return false;
+  }
   timing::Timer ros_color_timer("ros/color");
   timing::Timer transform_timer("ros/color/transform");
 
@@ -637,6 +655,12 @@ bool NvbloxNode::processColorImage(
 
 bool NvbloxNode::processLidarPointcloud(
     const sensor_msgs::PointCloud2::ConstPtr& pointcloud_ptr) {
+  // Check if mapping is enabled
+  if (!mapping_started_) {
+    ROS_DEBUG_THROTTLE(5.0,
+                       "Mapping is stopped. Skipping depth image processing.");
+    return false;
+  }
   timing::Timer ros_lidar_timer("ros/lidar");
   timing::Timer transform_timer("ros/lidar/transform");
 
@@ -797,6 +821,107 @@ bool NvbloxNode::loadMap(nvblox_msgs::FilePath::Request& request,
   } else {
     ROS_WARN_STREAM("Failed to load map file from " << filename);
   }
+  return true;
+}
+
+bool NvbloxNode::startMapping(std_srvs::Trigger::Request& request,
+                              std_srvs::Trigger::Response& response) {
+  std::unique_lock<std::mutex> lock(map_mutex_);
+
+  if (mapping_started_) {
+    response.success = true;
+    response.message = "Mapping was already started";
+    ROS_INFO("Mapping start requested, but mapping is already active");
+  } else {
+    mapping_started_ = true;
+    response.success = true;
+    response.message = "Mapping started successfully";
+    ROS_INFO("Mapping started");
+  }
+
+  return true;
+}
+
+bool NvbloxNode::stopMapping(std_srvs::Trigger::Request& request,
+                             std_srvs::Trigger::Response& response) {
+  std::unique_lock<std::mutex> lock(map_mutex_);
+
+  if (!mapping_started_) {
+    response.success = true;
+    response.message = "Mapping was already stopped";
+    ROS_INFO("Mapping stop requested, but mapping is already inactive");
+  } else {
+    mapping_started_ = false;
+    response.success = true;
+    response.message = "Mapping stopped successfully";
+    ROS_INFO("Mapping stopped");
+  }
+
+  return true;
+}
+
+bool NvbloxNode::clearMap(std_srvs::Trigger::Request& request,
+                          std_srvs::Trigger::Response& response) {
+  std::unique_lock<std::mutex> lock(map_mutex_);
+
+  try {
+    if (mapper_) {
+      // Clear all layers using the layer access methods
+      // Based on the Mapper implementation, we need to access layers through
+      // layers_
+
+      // Clear TSDF layer
+      auto tsdf_layer = mapper_->tsdf_layer();
+      std::vector<Index3D> tsdf_blocks = tsdf_layer.getAllBlockIndices();
+      tsdf_layer.clearBlocks(tsdf_blocks);
+      ROS_DEBUG("Cleared %zu TSDF blocks", tsdf_blocks.size());
+
+      // Clear Color layer
+      auto color_layer = mapper_->color_layer();
+      std::vector<Index3D> color_blocks = color_layer.getAllBlockIndices();
+      color_layer.clearBlocks(color_blocks);
+      ROS_DEBUG("Cleared %zu Color blocks", color_blocks.size());
+
+      // Clear Occupancy layer
+      auto occupancy_layer = mapper_->occupancy_layer();
+      std::vector<Index3D> occupancy_blocks =
+          occupancy_layer.getAllBlockIndices();
+      occupancy_layer.clearBlocks(occupancy_blocks);
+      ROS_DEBUG("Cleared %zu Occupancy blocks", occupancy_blocks.size());
+
+      // Clear ESDF layer
+      auto esdf_layer = mapper_->esdf_layer();
+      std::vector<Index3D> esdf_blocks = esdf_layer.getAllBlockIndices();
+      esdf_layer.clearBlocks(esdf_blocks);
+      ROS_DEBUG("Cleared %zu ESDF blocks", esdf_blocks.size());
+
+      // Clear Mesh layer
+      auto mesh_layer = mapper_->mesh_layer();
+      std::vector<Index3D> mesh_blocks = mesh_layer.getAllBlockIndices();
+      mesh_layer.clearBlocks(mesh_blocks);
+      ROS_DEBUG("Cleared %zu Mesh blocks", mesh_blocks.size());
+
+      // Clear the internal update queues
+      // mapper_->clearUpdateQueues();
+
+      // Clear cached mesh blocks for deletion tracking in the node
+      mesh_blocks_deleted_.clear();
+
+      response.success = true;
+      response.message = "Map cleared successfully";
+      ROS_INFO("Map cleared - all layers have been reset");
+
+    } else {
+      response.success = false;
+      response.message = "Mapper not initialized";
+      ROS_ERROR("Cannot clear map: mapper not initialized");
+    }
+  } catch (const std::exception& e) {
+    response.success = false;
+    response.message = "Failed to clear map: " + std::string(e.what());
+    ROS_ERROR("Exception while clearing map: %s", e.what());
+  }
+
   return true;
 }
 
