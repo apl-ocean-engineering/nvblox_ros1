@@ -901,15 +901,48 @@ bool NvbloxNode::clearMap(std_srvs::Trigger::Request& request,
       mesh_layer.clearBlocks(mesh_blocks);
       ROS_DEBUG("Cleared %zu Mesh blocks", mesh_blocks.size());
 
-      // Clear the internal update queues
-      // mapper_->clearUpdateQueues();
+      // To clear the internal update queues (esdf_blocks_to_update_ and
+      // mesh_blocks_to_update_) within the Mapper class without modifying
+      // mapper.cpp, we call the update functions. These functions
+      // process the blocks in their respective 'to update' sets and then
+      // clear those sets. Since the map layers are now empty,
+      // these calls will effectively just clear the internal queues.
+      mapper_->updateEsdf();
+      mapper_->updateMesh();
 
       // Clear cached mesh blocks for deletion tracking in the node
       mesh_blocks_deleted_.clear();
 
+      // Explicitly publish a clear message for the mesh visualization in RViz.
+      // This ensures that existing subscribers also clear their visualization.
+      if (mesh_publisher_.getNumSubscribers() > 0) {
+        nvblox_msgs::Mesh mesh_msg;
+        mesh_msg.header.frame_id = global_frame_;
+        mesh_msg.header.stamp = ros::Time::now();
+        mesh_msg.clear = true; // Signal RViz to clear existing mesh
+        mesh_publisher_.publish(mesh_msg);
+      }
+
+      // You may also want to publish an empty pointcloud message to clear
+      // ESDF and Occupancy point cloud visualizations in RViz, as PointCloud2
+      // messages typically do not have a 'clear' flag.
+      if (esdf_pointcloud_publisher_.getNumSubscribers() > 0) {
+         sensor_msgs::PointCloud2 esdf_pc_msg;
+         esdf_pc_msg.header.frame_id = global_frame_;
+         esdf_pc_msg.header.stamp = ros::Time::now();
+         esdf_pointcloud_publisher_.publish(esdf_pc_msg);
+      }
+      if (occupancy_publisher_.getNumSubscribers() > 0) {
+         sensor_msgs::PointCloud2 occupancy_pc_msg;
+         occupancy_pc_msg.header.frame_id = global_frame_;
+         occupancy_pc_msg.header.stamp = ros::Time::now();
+         occupancy_publisher_.publish(occupancy_pc_msg);
+      }
+
+
       response.success = true;
       response.message = "Map cleared successfully";
-      ROS_INFO("Map cleared - all layers have been reset");
+      ROS_INFO("Map cleared - all layers and internal states have been reset");
 
     } else {
       response.success = false;
@@ -924,5 +957,6 @@ bool NvbloxNode::clearMap(std_srvs::Trigger::Request& request,
 
   return true;
 }
+
 
 }  // namespace nvblox
